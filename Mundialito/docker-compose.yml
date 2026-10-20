@@ -1,0 +1,49 @@
+
+services:
+  mundialito-db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: mundialito-sqlserver
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_PID: "Developer"
+      MSSQL_SA_PASSWORD: "${MSSQL_SA_PASSWORD:?Configura MSSQL_SA_PASSWORD en .env}"
+    ports:
+      - "14330:1433"
+    volumes:
+      - mundialito_sql_data:/var/opt/mssql
+    restart: unless-stopped
+
+  mundialito-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: mundialito-api
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:8080
+      ConnectionStrings__DefaultConnection: "Server=mundialito-db,1433;Database=MundialitoDB;User Id=sa;Password=${MSSQL_SA_PASSWORD:?Configura MSSQL_SA_PASSWORD en .env};Encrypt=True;TrustServerCertificate=True;"
+    ports:
+      - "5241:8080"
+    depends_on:
+      - mundialito-db
+    restart: unless-stopped
+
+  mundialito-frontend:
+    build:
+      context: ../mundialito-frontend
+      dockerfile: Dockerfile
+    container_name: mundialito-frontend
+    environment:
+      NODE_ENV: production
+      HOSTNAME: "0.0.0.0"
+      PORT: "3000"
+    ports:
+      - "3001:3000"
+    depends_on:
+      - mundialito-api
+    restart: unless-stopped
+
+volumes:
+  mundialito_sql_data:
+    name: mundialito_mundialito_sql_data
+    external: true

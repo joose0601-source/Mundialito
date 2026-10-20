@@ -1,0 +1,28 @@
+
+# Secretos y variables de entorno
+.env
+.env.*
+!.env.example
+**/.env
+**/.env.*
+
+# .NET
+**/bin/
+**/obj/
+**/.vs/
+*.user
+*.suo
+
+# Next.js
+**/node_modules/
+**/.next/
+**/out/
+
+# Editores
+.vscode/
+
+# Logs
+*.log
+
+# Respaldo temporal del historial Git del frontend
+/frontend-git-backup/
